@@ -1,3 +1,7 @@
+# ASP.NET Kerberos Samples
+
+This project contains samples for configuring Windows SSO with Linux ASP.NET 8+ application using managed Kerberos implementation based on `Kerberos.NET`.
+
 ## Infrastructure Setup
 
 The setup configures an Active Directory Domain Services (AD DS) domain on a Windows Server 2019 virtual machine (VM), joining a Windows 11 VM to that domain, and setting up a Linux VM to host a Kerberos-authenticated application with Single Sign-On (SSO) using Microsoft Edge.
@@ -10,7 +14,7 @@ The setup configures an Active Directory Domain Services (AD DS) domain on a Win
    - All VMs are on the same network and can communicate (e.g., via a virtual LAN in your hypervisor).
 2. **DNS**: The Windows Server 2019 VM will act as the DNS server for the network domain.
 3. **Domain Name**: Choose a domain name, e.g., `example.local`.
-5. **App**: The Linux VM will host a .NET service configured for Kerberos authentication.
+5. **App**: The Linux VM will host a .NET app configured for Kerberos authentication.
 
 ### **Step 1: Configure Active Directory Domain Services (AD DS) on Windows Server 2019**
 1. **Install AD DS Role**:
@@ -55,9 +59,12 @@ The setup configures an Active Directory Domain Services (AD DS) domain on a Win
 
 4. **Configure Edge for Kerberos**:
    - Open Microsoft Edge on the Windows 11 VM.
-   - Go to **Settings** → **System and performance** → Ensure **Use single sign-on** is enabled.
-   - Enable **Integrated Windows Authentication**:
-     - In **Internet Options** → **Advanced** → Check **Enable Integrated Windows Authentication**.
+   - Go to **Settings** → **System and performance** → Ensure **Use single sign-on** is enabled. **NOTE: this is critical for SSO to work, but not for authentication!**
+   - **Configure Internet Options for automatic authentication**:
+     - Press `Windows + R`, type `inetcpl.cpl`, press Enter.
+     - Go to **Security** tab → Select **Local intranet** → Click **Sites**.
+     - Click **Advanced** → Add `https://linux-server.example.local`.
+     - Click **OK** to close all dialogs.
    - Restart Edge.
 
 ### **Step 3: Configure App for Kerberos Authentication**
@@ -74,11 +81,11 @@ The setup configures an Active Directory Domain Services (AD DS) domain on a Win
    - Copy `linux-server.keytab` to the Linux VM.
 
 2. **Update DNS on Linux VM**:
-   - Manually edit connection config and use a static IP `192.168.1.11` and DNS `192.168.1.11`.
+   - Manually edit connection config and use a static IP `192.168.1.11` and DNS `192.168.1.10` (Windows Server).
    - Verify DNS resolution: `ping adfs-server.example.local`.
 
 ### **Step 4: Test SSO from Windows 11**
 1. **Access the App**:
    - On the Windows 11 VM, log in as `user1@example.local`.
-   - Open Microsoft Edge and navigate to `https://linux-service.example.local:5001/secure`.
+   - Open Microsoft Edge and navigate to `https://linux-server.example.local:5001/secure`.
    - If configured correctly, you should be authenticated via Kerberos.
