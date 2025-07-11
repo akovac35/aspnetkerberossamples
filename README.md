@@ -2,6 +2,14 @@
 
 This project contains samples for configuring Windows SSO with Linux ASP.NET 8+ application using managed Kerberos implementation based on `Kerberos.NET`.
 
+## Project Structure
+
+- `Program.cs` - Main application with Kerberos authentication setup
+- `KerberosAuthHandler.cs` - Custom authentication handler for Kerberos
+- `appsettings.json` - Configuration including Kerberos settings and HTTPS certificate
+- `create-cert.sh` - Script to generate self-signed SSL certificates
+- `copy-to-server.sh` - Deployment script for building and copying application files to Linux server
+
 ## Infrastructure Setup
 
 The setup configures an Active Directory Domain Services (AD DS) domain on a Windows Server 2019 virtual machine (VM), joining a Windows 11 VM to that domain, and setting up a Linux VM to host a Kerberos-authenticated application with Single Sign-On (SSO) using Microsoft Edge.
@@ -14,6 +22,7 @@ The setup configures an Active Directory Domain Services (AD DS) domain on a Win
    - All VMs are on the same network and can communicate (e.g., via a virtual LAN in your hypervisor).
 2. **DNS**: The Windows Server 2019 VM will act as the DNS server for the network domain.
 3. **Domain Name**: Choose a domain name, e.g., `example.local`.
+4. **Development Tools**: .NET 8 SDK, bash, OpenSSL (for certificate generation), and SCP client for deployment.
 5. **App**: The Linux VM will host a .NET app configured for Kerberos authentication.
 
 ### **Step 1: Configure Active Directory Domain Services (AD DS) on Windows Server 2019**
@@ -35,7 +44,6 @@ The setup configures an Active Directory Domain Services (AD DS) domain on a Win
    - Open **DNS Manager** (`dnsmgmt.msc`).
    - Ensure the domain `example.local` has an **A record** for `adfs-server.example.local` pointing to `192.168.1.10`.
    - Add an **A record** for `linux-server.example.local` pointing to `192.168.1.11`.
-   - Add a **CNAME record** for the AD FS service, e.g., `adfs.example.local` → `adfs-server.example.local`.
 
 4. **Create Service Account for App**:
    - Open **Active Directory Users and Computers** (`dsa.msc`).
@@ -91,3 +99,41 @@ The setup configures an Active Directory Domain Services (AD DS) domain on a Win
    - If configured correctly, you should be authenticated via Kerberos.
    - If authentication works, but not SSO, then confirm the site is registered under **Local intranet** in the AD domain computers.
    - Validate system clocks for involved servers in case of authentication problems.
+
+2. **Test Endpoints**:
+   - `/public` - Public endpoint, no authentication required
+   - `/auth-status` - Shows current authentication status and user claims
+   - `/secure` - Protected endpoint requiring Kerberos authentication
+   - `/weatherforecast` - Sample API endpoint
+
+## Troubleshooting
+
+### **Common Issues**
+
+1. **"Failed to load keytab file"**:
+   - Ensure the keytab file exists and has correct permissions
+   - Verify the file path in `appsettings.json`
+
+2. **"Authentication failed"**:
+   - Check system clocks are synchronized between all servers
+   - Verify SPN is correctly registered: `setspn -L svc-app`
+   - Ensure DNS resolution works from all machines
+
+3. **SSL Certificate Issues**:
+   - Run `./create-cert.sh` to regenerate certificates
+   - Import the certificate to Windows client's trusted store if needed
+
+4. **SSO Not Working**:
+   - Verify the site is added to Local Intranet zone in Internet Options
+   - Check that Edge is configured for automatic authentication
+   - Ensure user is logged in with domain credentials
+
+5. **Connection Refused**:
+   - Check firewall settings on Linux server (ports 5000/5001)
+   - Verify application is running: `netstat -tlnp | grep 5001`
+
+## References
+
+- [Kerberos.NET Documentation](https://github.com/dotnet/Kerberos.NET)
+- [ASP.NET Core Authentication](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/)
+- [Windows Server Active Directory Domain Services](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview)
