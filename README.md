@@ -59,7 +59,7 @@ The setup configures an Active Directory Domain Services (AD DS) domain on a Win
 
 4. **Configure Edge for Kerberos**:
    - Open Microsoft Edge on the Windows 11 VM.
-   - Go to **Settings** → **System and performance** → Ensure **Use single sign-on** is enabled. **NOTE: this is critical for SSO to work, but not for authentication!**
+   - Go to **Settings** → **System and performance** → Ensure **Use single sign-on** is enabled.
    - **Configure Internet Options for automatic authentication**:
      - Press `Windows + R`, type `inetcpl.cpl`, press Enter.
      - Go to **Security** tab → Select **Local intranet** → Click **Sites**.
@@ -89,3 +89,5 @@ The setup configures an Active Directory Domain Services (AD DS) domain on a Win
    - On the Windows 11 VM, log in as `user1@example.local`.
    - Open Microsoft Edge and navigate to `https://linux-server.example.local:5001/secure`.
    - If configured correctly, you should be authenticated via Kerberos.
+   - If authentication works, but not SSO, then confirm the site is registered under **Local intranet** in the AD domain computers.
+   - Validate system clocks for involved servers in case of authentication problems.

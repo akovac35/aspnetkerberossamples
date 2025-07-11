@@ -7,22 +7,22 @@ using Microsoft.Extensions.Options;
 
 public class KerberosAuthOptions : AuthenticationSchemeOptions
 {
-    public string KeytabPath { get; set; }
-    public string ServicePrincipalName { get; set; }
+    public string? KeytabPath { get; set; }
+    public string? ServicePrincipalName { get; set; }
     public bool AutoSendChallenge { get; set; } = true;
 }
 
 public class KerberosAuthHandler : AuthenticationHandler<KerberosAuthOptions>
 {
-    private readonly ILoggerFactory _loggerFactory;
-    private KeyTable _keytab;
+    private readonly ILoggerFactory loggerFactory;
+    private KeyTable? keytab;
 
     public KerberosAuthHandler(
         IOptionsMonitor<KerberosAuthOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder) : base(options, logger, encoder)
+        ILoggerFactory loggerFactory,
+        UrlEncoder encoder) : base(options, loggerFactory, encoder)
     {
-        _loggerFactory = logger;
+        this.loggerFactory = loggerFactory;
     }
 
     protected override async Task InitializeHandlerAsync()
@@ -31,9 +31,9 @@ public class KerberosAuthHandler : AuthenticationHandler<KerberosAuthOptions>
         try
         {
             // Load keytab during initialization to improve performance
-            using (var fs = new FileStream(Options.KeytabPath, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(Options.KeytabPath ?? throw new InvalidOperationException(), FileMode.Open, FileAccess.Read))
             {
-                _keytab = new KeyTable(fs);
+                keytab = new KeyTable(fs);
             }
             Logger.LogInformation("Successfully loaded keytab from {KeytabPath}", Options.KeytabPath);
         }
@@ -65,11 +65,11 @@ public class KerberosAuthHandler : AuthenticationHandler<KerberosAuthOptions>
         try
         {
             // Correctly create the validator with logger factory and set ValidationActions
-            var kerbValidator = new KerberosValidator(_keytab, _loggerFactory);
-            kerbValidator.ValidateAfterDecrypt = ValidationActions.None;
+            var kerbValidator = new KerberosValidator(keytab, loggerFactory);
+            kerbValidator.ValidateAfterDecrypt = ValidationActions.All;
 
             // Use Validate method, not Authenticate
-            Logger.LogDebug("Validating Kerberos token");
+            Logger.LogDebug("Validating Kerberos token with validator actions {ValidationActions}", kerbValidator.ValidateAfterDecrypt);
             var decryptedApReq = await kerbValidator.Validate(Convert.FromBase64String(token));
 
             // Get the authenticated user
