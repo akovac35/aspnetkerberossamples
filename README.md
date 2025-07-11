@@ -30,6 +30,7 @@ The setup configures an Active Directory Domain Services (AD DS) domain on a Win
 3. **Verify DNS**:
    - Open **DNS Manager** (`dnsmgmt.msc`).
    - Ensure the domain `example.local` has an **A record** for `adfs-server.example.local` pointing to `192.168.1.10`.
+   - Add an **A record** for `linux-server.example.local` pointing to `192.168.1.11`.
    - Add a **CNAME record** for the AD FS service, e.g., `adfs.example.local` → `adfs-server.example.local`.
 
 4. **Create Service Account for App**:
@@ -64,24 +65,20 @@ The setup configures an Active Directory Domain Services (AD DS) domain on a Win
    - On the Windows Server 2019, open a PowerShell prompt as Administrator.
    - Create an SPN for the app:
      ```powershell
-     setspn -S HTTP/linux-server.local@LOCAL svc-app
+     setspn -S HTTP/linux-server.example.local@EXAMPLE.LOCAL svc-app
      ```
    - Generate a keytab file:
      ```powershell
-     ktpass -princ HTTP/linux-server.local@LOCAL -mapuser svc-app@LOCAL -crypto ALL -ptype KRB5_NT_PRINCIPAL -pass <svc-app-password> -out c:\tmp\linux-server.keytab
+     ktpass -princ HTTP/linux-server.example.local@EXAMPLE.LOCAL -mapuser svc-app@EXAMPLE.LOCAL -crypto ALL -ptype KRB5_NT_PRINCIPAL -pass <svc-app-password> -out c:\tmp\linux-server.keytab
      ```
    - Copy `linux-server.keytab` to the Linux VM.
 
-2. **Update DNS on Linux**:
-   - Edit `/etc/hosts`:
-     ```text
-     192.168.1.10 adfs-server.example.local
-     192.168.1.30 linux-service.example.local
-     ```
+2. **Update DNS on Linux VM**:
+   - Manually edit connection config and use a static IP `192.168.1.11` and DNS `192.168.1.11`.
    - Verify DNS resolution: `ping adfs-server.example.local`.
 
 ### **Step 4: Test SSO from Windows 11**
-1. **Access the app**:
+1. **Access the App**:
    - On the Windows 11 VM, log in as `user1@example.local`.
-   - Open Microsoft Edge and navigate to `https://linux-service.local:5001/secure`.
+   - Open Microsoft Edge and navigate to `https://linux-service.example.local:5001/secure`.
    - If configured correctly, you should be authenticated via Kerberos.

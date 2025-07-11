@@ -14,13 +14,13 @@ req_extensions = v3_req
 prompt = no
 
 [req_distinguished_name]
-CN = linux-server.local
+CN = linux-server.example.local
 
 [v3_req]
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = linux-server.local
+DNS.1 = linux-server.example.local
 EOF
 
 # Create a self-signed certificate with proper DNS name
