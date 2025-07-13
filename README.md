@@ -1,6 +1,38 @@
 # ASP.NET Kerberos Samples
 
-This project contains samples for configuring Windows SSO with Linux ASP.NET 8+ application using managed Kerberos implementation based on `Kerberos.NET`.
+This project contains samples for configuring Windows SSO with Linux ASP.NET 8+ application using managed `Kerberos.NET` implementation.
+
+Single Sign-On (SSO) enables users to authenticate once and access multiple services without re-entering credentials. This functionality relies on various authentication protocols—NTLM, Kerberos, MS-KILE, and SPNEGO—and their relationships.
+
+Managed Kerberos implementation facilitates integration without requiring the application to rely on the host OS configuration.
+
+## Windows Authentication Protocols
+
+This chapter provides an overview of the key authentication protocols used in Windows environments, particularly in Active Directory (AD) domains, and their relationships.
+
+### SPNEGO (Simple and Protected GSSAPI Negotiation Mechanism)
+SPNEGO is a protocol that enables clients and servers to negotiate the authentication mechanism to use, typically choosing between Kerberos and NTLM. In Windows domains, SPNEGO prioritizes Kerberos for its security and SSO capabilities but falls back to NTLM when Kerberos is not feasible. SPNEGO operates through the Generic Security Service Application Program Interface (GSSAPI), providing a standardized way to handle authentication across different protocols.
+
+### NTLM (NT LAN Manager)
+NTLM is a proprietary Microsoft security protocol suite that provides authentication, integrity, and confidentiality. It is used in Windows environments, particularly as a fallback when Kerberos is unavailable.
+
+### Kerberos
+Kerberos is a standardized network authentication protocol that uses secret-key cryptography to provide strong authentication for client-server applications. In Windows domains, Kerberos is the default authentication mechanism, enabling SSO by issuing a Ticket Granting Ticket (TGT) upon user login. The TGT is used to obtain service tickets for accessing resources without re-authentication, making it efficient and secure for enterprise environments.
+
+### MS-KILE (Microsoft Kerberos Protocol Extensions)
+MS-KILE is Microsoft’s implementation of the Kerberos protocol, adhering to the standard but incorporating extensions to enhance functionality within Windows environments. A key extension is the Privilege Attribute Certificate (PAC), which embeds authorization data, such as user group memberships and security identifiers (SIDs), directly into Kerberos tickets. This allows services to perform authorization without querying the Active Directory separately, improving efficiency.
+
+### Relationships Between Protocols
+In Windows Active Directory environments, Kerberos (via MS-KILE) is the primary authentication protocol due to its robust security and SSO support. NTLM serves as a fallback for scenarios where Kerberos cannot be used, such as when a client is not domain-joined or cannot reach the KDC. SPNEGO facilitates seamless authentication by negotiating the protocol, ensuring that Kerberos is used whenever possible. MS-KILE extends standard Kerberos with features like the PAC, which integrates authorization data into the authentication process, making it a cornerstone of Windows domain security.
+
+The following table summarizes the roles and relationships of these protocols:
+
+| **Protocol** | **Role** | **Relationship** |
+|--------------|----------|------------------|
+| NTLM         | Authentication, SSO | Used by SPNEGO as a fallback when Kerberos is unavailable |
+| Kerberos     | Authentication, SSO | Primary protocol negotiated by SPNEGO |
+| MS-KILE      | Microsoft’s Kerberos implementation with extensions | Extends standard Kerberos, used in Windows domains |
+| SPNEGO       | Authentication protocol negotiation | Negotiates between NTLM and Kerberos/MS-KILE |
 
 ## Project Structure
 
