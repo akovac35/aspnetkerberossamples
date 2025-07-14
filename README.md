@@ -2,7 +2,7 @@
 
 This project contains samples for configuring Windows SSO with Linux ASP.NET 8+ application using managed `Kerberos.NET` implementation.
 
-Single Sign-On (SSO) enables users to authenticate once and access multiple services without re-entering credentials. This functionality relies on various authentication protocols—NTLM, Kerberos, MS-KILE, and SPNEGO—and their relationships.
+Windows Single Sign-On (SSO) enables users to authenticate once and access multiple services without re-entering credentials. This functionality relies on various authentication protocols—NTLM, Kerberos, MS-KILE, and SPNEGO—and their relationships.
 
 Managed Kerberos implementation facilitates integration without requiring the application to rely on the host OS configuration.
 
