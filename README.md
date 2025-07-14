@@ -11,7 +11,7 @@ Managed Kerberos implementation facilitates integration without requiring the ap
 This chapter provides an overview of the key authentication protocols used in Windows environments, particularly in Active Directory (AD) domains, and their relationships.
 
 ### SPNEGO (Simple and Protected GSSAPI Negotiation Mechanism)
-SPNEGO is a protocol that enables clients and servers to negotiate the authentication mechanism to use, typically choosing between Kerberos and NTLM. In Windows domains, SPNEGO prioritizes Kerberos for its security and SSO capabilities but falls back to NTLM when Kerberos is not feasible. SPNEGO operates through the Generic Security Service Application Program Interface (GSSAPI), providing a standardized way to handle authentication across different protocols.
+SPNEGO is a protocol that enables clients and servers to negotiate the authentication mechanism to use, typically choosing between Kerberos and NTLM. In Windows domains, SPNEGO prioritizes Kerberos for its security and SSO capabilities but falls back to NTLM when Kerberos is not feasible. SPNEGO operates through the Generic Security Service Application Program Interface (GSSAPI), providing a standardized way to handle authentication across different protocols. In the context of HTTP authentication, as specified in RFC 4559, SPNEGO is used with the 'Negotiate' auth-scheme.
 
 ### NTLM (NT LAN Manager)
 NTLM is a proprietary Microsoft security protocol suite that provides authentication, integrity, and confidentiality. It is used in Windows environments, particularly as a fallback when Kerberos is unavailable.
@@ -205,4 +205,6 @@ Windows Kerberos implementation is called `MS-KILE` and contains some extensions
 - [Kerberos.NET Documentation](https://github.com/dotnet/Kerberos.NET)
 - [ASP.NET Core Authentication](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/)
 - [Windows Server Active Directory Domain Services](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview)
+- [SPNEGO-based Kerberos and NTLM HTTP Authentication in Microsoft Windows](https://www.rfc-editor.org/info/rfc4559)
+- [MS-SPNG](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-spng)
 - [MS-KILE Protocol](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/)
