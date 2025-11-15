@@ -36,9 +36,14 @@ The following table summarizes the roles and relationships of these protocols:
 
 ## Project Structure
 
-- `Program.cs` - Main application with Kerberos authentication setup
-- `KerberosAuthHandler.cs` - Custom authentication handler for Kerberos
-- `appsettings.json` - Configuration including Kerberos settings and HTTPS certificate
+- `kerberos_sample/` - Main ASP.NET application project
+  - `Program.cs` - Main application with Kerberos authentication setup
+  - `KerberosAuthHandler.cs` - Custom authentication handler for Kerberos
+  - `appsettings.json` - Configuration including Kerberos settings and HTTPS certificate
+  - `kerberos_sample.csproj` - Project file
+- `kerberos_cli_client_sample/` - CLI client application for testing Kerberos authentication (run on Windows machine under domain user)
+  - `Program.cs` - Client application code
+  - `kerberos_cli_client_sample.csproj` - Project file
 - `create-cert.sh` - Script to generate self-signed SSL certificates
 - `copy-to-server.sh` - Deployment script for building and copying application files to a Linux host
 
@@ -135,6 +140,7 @@ The setup configures an Active Directory Domain Services (AD DS) domain on a Win
    - Open Microsoft Edge and navigate to `https://linux-server.example.local:5001/login`.
    - If configured correctly, you should be authenticated via Kerberos SSO.
    - If authentication works, but not SSO, then confirm the site is registered under **Local intranet** in the AD domain computers.
+   - Alternatively, test using the CLI client: run `kerberos_cli_client_sample` on the Windows 11 VM under `user1@example.local`.
 
 2. **Test Endpoints**:
    - `/public` - Public endpoint, no authentication is required
